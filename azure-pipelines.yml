@@ -1,0 +1,50 @@
+trigger:
+  branches:
+    include:
+      - main  # Trigger pipeline on changes to the main branch
+
+pool:
+  vmImage: 'ubuntu-latest'  # Use an Ubuntu VM for the build agent
+
+variables:
+  imageName: 'python-app'  # Name of your Docker image
+  acrName: 'workacr1'      # Your ACR name
+  registry: '$(acrName).azurecr.io'  # Correct reference to registry
+  tag: '$(Build.BuildId)'  # Tag the image with the build ID
+
+steps:
+# Step 1: Log in to Azure
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: '<work1>'  # Replace with your Azure connection name
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      echo "Logging into Azure..."
+      az login --identity
+
+# Step 2: Log in to ACR
+- task: Docker@2
+  inputs:
+    command: 'login'
+    containerRegistry: '$(acrName).azurecr.io'  # Correct reference to ACR registry
+
+# Step 3: Build and Push Docker Image to ACR
+- task: Docker@2
+  inputs:
+    command: 'buildAndPush'
+    containerRegistry: '$(acrName).azurecr.io'  # Correct reference to ACR registry
+    repository: '$(imageName)'  # Correct reference to image name (python-app)
+    tags: '$(tag)'
+    dockerfile: '**/Dockerfile'
+    buildContext: '$(Build.SourcesDirectory)'
+
+# Step 4: Deploy to AKS
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'work1'  # Replace with your Azure connection name
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      echo "Deploying to AKS..."
+      kubectl apply -f deployment.yaml
