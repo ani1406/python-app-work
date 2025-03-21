@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: python-app
-        image: workacr12.azurecr.io/myapp:latest
+        image: workacr1.azurecr.io/python-app:latest
         ports:
         - containerPort: 5000
