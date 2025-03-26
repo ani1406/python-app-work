@@ -16,7 +16,7 @@ steps:
 # Step 1: Log in to Azure
 - task: AzureCLI@2
   inputs:
-    azureSubscription: '<work1>'  # Replace with your Azure connection name
+    azureSubscription: 'work1'  # Ensure this is the correct service connection name
     scriptType: bash
     scriptLocation: inlineScript
     inlineScript: |
@@ -35,14 +35,14 @@ steps:
     command: 'buildAndPush'
     containerRegistry: '$(acrName).azurecr.io'  # Correct reference to ACR registry
     repository: '$(imageName)'  # Correct reference to image name (python-app)
-    tags: '$(tag)'
+    tags: '$(tag)'  # Tag the image with the build ID
     dockerfile: '**/Dockerfile'
     buildContext: '$(Build.SourcesDirectory)'
 
 # Step 4: Deploy to AKS
 - task: AzureCLI@2
   inputs:
-    azureSubscription: 'work1'  # Replace with your Azure connection name
+    azureSubscription: 'work1'  # Ensure this is the correct service connection name
     scriptType: bash
     scriptLocation: inlineScript
     inlineScript: |
