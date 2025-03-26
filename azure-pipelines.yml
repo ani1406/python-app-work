@@ -27,7 +27,7 @@ steps:
 - task: Docker@2
   inputs:
     command: 'login'
-    containerRegistry: '$(acrName).azurecr.io'  # Correct reference to ACR registry
+    containerRegistry: 'workacr1.azurecr.io'  # Correct reference to ACR registry
 
 # Step 3: Build and Push Docker Image to ACR
 - task: Docker@2
