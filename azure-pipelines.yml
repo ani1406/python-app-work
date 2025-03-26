@@ -27,13 +27,13 @@ steps:
 - task: Docker@2
   inputs:
     command: 'login'
-    containerRegistry: 'workacr1.azurecr.io'  # Correct reference to ACR registry
+    containerRegistry: 'work1'  # Use the Service Connection name, NOT the ACR URL (workacr1.azurecr.io)
 
 # Step 3: Build and Push Docker Image to ACR
 - task: Docker@2
   inputs:
     command: 'buildAndPush'
-    containerRegistry: '$(acrName).azurecr.io'  # Correct reference to ACR registry
+    containerRegistry: 'work1'  # Use the Service Connection name, NOT the ACR URL (workacr1.azurecr.io)
     repository: '$(imageName)'  # Correct reference to image name (python-app)
     tags: '$(tag)'  # Tag the image with the build ID
     dockerfile: '**/Dockerfile'
