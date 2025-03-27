@@ -19,7 +19,7 @@ steps:
     targetType: 'inline'
     script: |
       echo "Installing Azure CLI..."
-      curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+      curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash --debug
 
 # Step 2: Verify Azure CLI Version
 - task: Bash@3
@@ -27,7 +27,7 @@ steps:
     targetType: 'inline'
     script: |
       echo "Verifying Azure CLI version..."
-      az --version
+      az --version --debug
 
 # Step 3: Log in to Azure using the ARM service connection
 - task: AzureCLI@2
@@ -37,7 +37,7 @@ steps:
     scriptLocation: inlineScript
     inlineScript: |
       echo "Logging into Azure..."
-      az login --identity
+      az login --identity --debug
 
 # Step 4: Log in to ACR using the Docker service connection
 - task: Docker@2
@@ -63,4 +63,4 @@ steps:
     scriptLocation: inlineScript
     inlineScript: |
       echo "Deploying to AKS..."
-      kubectl apply -f deployment.yaml
+      kubectl apply -f deployment.yaml --debug
