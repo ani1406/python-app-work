@@ -4,7 +4,7 @@ trigger:
       - main  # Trigger pipeline on changes to the main branch
 
 pool:
-  name: 'work-agent'  # Use the self-hosted agent pool (work-agent)
+  vmImage: 'ubuntu-latest'  # Use an Ubuntu VM for the build agent
 
 variables:
   imageName: 'python-app'  # Name of your Docker image
@@ -15,22 +15,21 @@ variables:
 steps:
 # Step 1: Install Azure CLI
 - task: Bash@3
-  displayName: 'Install Azure CLI'
   inputs:
     targetType: 'inline'
     script: |
       echo "Installing Azure CLI..."
+      sudo curl -sL https://packages.microsoft.com/repos/azure-cli/ubuntu/dists/focal/main/binary-amd64/Packages -o /etc/apt/sources.list.d/azure-cli.list
+      sudo curl -sL https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
       sudo apt-get update
-      sudo apt-get install -y ca-certificates curl apt-transport-https lsb-release gnupg
-      curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+      sudo apt-get install -y azure-cli
 
-# Step 2: Verify Azure CLI version
+# Step 2: Verify Azure CLI Version
 - task: Bash@3
-  displayName: 'Verify Azure CLI Version'
   inputs:
     targetType: 'inline'
     script: |
-      echo "Checking Azure CLI version..."
+      echo "Verifying Azure CLI version..."
       az --version
 
 # Step 3: Log in to Azure using the ARM service connection
