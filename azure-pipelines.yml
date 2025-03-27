@@ -13,7 +13,18 @@ variables:
   tag: '$(Build.BuildId)'  # Tag the image with the build ID
 
 steps:
-# Step 1: Log in to Azure using the ARM service connection
+# Step 1: Install Azure CLI
+- task: Bash@3
+  displayName: 'Install Azure CLI'
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo "Installing Azure CLI..."
+      sudo apt-get update
+      sudo apt-get install -y ca-certificates curl apt-transport-https lsb-release gnupg
+      curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+# Step 2: Log in to Azure using the ARM service connection
 - task: AzureCLI@2
   inputs:
     azureSubscription: 'work1-arm'  # Use the ARM service connection name
@@ -23,13 +34,13 @@ steps:
       echo "Logging into Azure..."
       az login --identity
 
-# Step 2: Log in to ACR using the Docker service connection
+# Step 3: Log in to ACR using the Docker service connection
 - task: Docker@2
   inputs:
     command: 'login'
     containerRegistry: 'work1'  # Use the Docker service connection name
 
-# Step 3: Build and Push Docker Image to ACR
+# Step 4: Build and Push Docker Image to ACR
 - task: Docker@2
   inputs:
     command: 'buildAndPush'
@@ -39,7 +50,7 @@ steps:
     dockerfile: '**/Dockerfile'
     buildContext: '$(Build.SourcesDirectory)'
 
-# Step 4: Deploy to AKS using the ARM service connection
+# Step 5: Deploy to AKS using the ARM service connection
 - task: AzureCLI@2
   inputs:
     azureSubscription: 'work1-arm'  # Use the ARM service connection name
