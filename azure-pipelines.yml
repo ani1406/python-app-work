@@ -4,7 +4,7 @@ trigger:
       - main  # Trigger pipeline on changes to the main branch
 
 pool:
-  vmImage: 'ubuntu-latest'  # Use an Ubuntu VM for the build agent
+  name: 'work-agent'  # Use the self-hosted agent pool (work-agent)
 
 variables:
   imageName: 'python-app'  # Name of your Docker image
@@ -24,7 +24,16 @@ steps:
       sudo apt-get install -y ca-certificates curl apt-transport-https lsb-release gnupg
       curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
-# Step 2: Log in to Azure using the ARM service connection
+# Step 2: Verify Azure CLI version
+- task: Bash@3
+  displayName: 'Verify Azure CLI Version'
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo "Checking Azure CLI version..."
+      az --version
+
+# Step 3: Log in to Azure using the ARM service connection
 - task: AzureCLI@2
   inputs:
     azureSubscription: 'work1-arm'  # Use the ARM service connection name
@@ -34,13 +43,13 @@ steps:
       echo "Logging into Azure..."
       az login --identity
 
-# Step 3: Log in to ACR using the Docker service connection
+# Step 4: Log in to ACR using the Docker service connection
 - task: Docker@2
   inputs:
     command: 'login'
     containerRegistry: 'work1'  # Use the Docker service connection name
 
-# Step 4: Build and Push Docker Image to ACR
+# Step 5: Build and Push Docker Image to ACR
 - task: Docker@2
   inputs:
     command: 'buildAndPush'
@@ -50,7 +59,7 @@ steps:
     dockerfile: '**/Dockerfile'
     buildContext: '$(Build.SourcesDirectory)'
 
-# Step 5: Deploy to AKS using the ARM service connection
+# Step 6: Deploy to AKS using the ARM service connection
 - task: AzureCLI@2
   inputs:
     azureSubscription: 'work1-arm'  # Use the ARM service connection name
