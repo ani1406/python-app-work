@@ -13,16 +13,13 @@ variables:
   tag: '$(Build.BuildId)'  # Tag the image with the build ID
 
 steps:
-# Step 1: Install Azure CLI
+# Step 1: Install Azure CLI using the official script
 - task: Bash@3
   inputs:
     targetType: 'inline'
     script: |
       echo "Installing Azure CLI..."
-      sudo curl -sL https://packages.microsoft.com/repos/azure-cli/ubuntu/dists/focal/main/binary-amd64/Packages -o /etc/apt/sources.list.d/azure-cli.list
-      sudo curl -sL https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-      sudo apt-get update
-      sudo apt-get install -y azure-cli
+      curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
 # Step 2: Verify Azure CLI Version
 - task: Bash@3
